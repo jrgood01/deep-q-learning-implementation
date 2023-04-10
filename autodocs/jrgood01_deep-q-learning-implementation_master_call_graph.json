@@ -1,0 +1,738 @@
+{
+  "0": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "Brick",
+    "method_name": "__init__",
+    "start_line": 8,
+    "end_line": 13,
+    "code": "def __init__(self, x, y, width, height, lives=5):\n    self.x = x\n    self.y = y\n    self.width = width\n    self.height = height\n    self.lives = lives",
+    "subcalls": [],
+    "summary": "The '__init__' method initializes an object of a class. It takes in five parameters: 'x', 'y', 'width', 'height', and an optional parameter 'lives' with a default value of 5. The method initializes the attributes of the object with the values of these parameters. There is no output from this method, as it serves the purpose of creating an object."
+  },
+  "1": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "Brick",
+    "method_name": "isOverlapping",
+    "start_line": 15,
+    "end_line": 16,
+    "code": "def isOverlapping(self, x, y, width, height):\n    return x >= self.x and y >= self.y and (x + width <= self.x + self.width) and (y + height <= self.y + self.height)",
+    "subcalls": [],
+    "summary": "The 'isOverlapping' method takes in four parameters: x, y, width, height. It then checks if a rectangle with these parameters overlaps with another rectangle defined by the 'self' object. The method returns True if there is an overlap, and False otherwise. The subcalls within the method simply perform logical operations to check for overlap."
+  },
+  "2": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "Brick",
+    "method_name": "getColor",
+    "start_line": 18,
+    "end_line": 19,
+    "code": "def getColor(self):\n    return [0, 0, 0]",
+    "subcalls": [],
+    "summary": "The 'getColor' method takes in no parameters and always returns a list with three values: [0, 0, 0]. There are no subcalls or dependencies within this method."
+  },
+  "3": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "BrickBreakerGym",
+    "method_name": "__init__",
+    "start_line": 22,
+    "end_line": 49,
+    "code": "def __init__(self, res_x, res_y, y_fill_proportion=0.5, brick_inlay_proportion=0.3, brick_width=100, brick_height=20):\n    self.res_x = res_x\n    self.res_y = res_y\n    self.canvas = Canvas(width=res_x, height=res_y, sync_image_data=True)\n    self.canvas.layout.width = str(res_x) + 'px'\n    self.canvas.layout.height = str(res_y) + 'px'\n    self.canvas.alpha = 0\n    self.bricks = []\n    self.paddle_width = 150\n    self.paddle_height = 20\n    self.paddle_x = 30\n    self.paddle_y = self.res_y - self.paddle_height\n    self.ball_x = 50\n    self.ball_y = self.paddle_y - 20\n    self.ball_dx = 1\n    self.ball_dy = -0.5\n    self.reward = 0\n    self.canvas.on_key_down(self.on_keyboard_event)\n    x_step = brick_width + 2\n    y_step = brick_height + 2\n    for x in range(0, int(res_x / x_step)):\n        start_x = x * x_step\n        for y in range(0, int(brick_inlay_proportion * res_y / y_step)):\n            start_y = y * y_step\n            if random.randint(0, 100) < brick_inlay_proportion * 100:\n                self.bricks.append(Brick(start_x, start_y, brick_width, brick_height))",
+    "subcalls": [],
+    "summary": "The '__init__' method is used to initialize the class variables. It takes in five parameters, namely res_x, res_y, y_fill_proportion, brick_inlay_proportion, brick_width, and brick_height. The method creates a canvas object with the specified width and height, initializes variables for the paddle, ball, and bricks of the game. It also adds a key-down event to the canvas for keyboard input. The method randomly creates and initialises brick objects based on some specified probabilities. There is no explicit return value from this method as it is a constructor."
+  },
+  "4": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "BrickBreakerGym",
+    "method_name": "startRender",
+    "start_line": 57,
+    "end_line": 58,
+    "code": "def startRender(self):\n    display(self.canvas)",
+    "subcalls": [],
+    "summary": "The Python method 'startRender' takes in one parameter 'self'. It displays the 'canvas' using the 'display' function. There are no sub calls or additional logic in this method. The output is none."
+  },
+  "5": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "BrickBreakerGym",
+    "method_name": "detectBrickHit",
+    "start_line": 60,
+    "end_line": 61,
+    "code": "def detectBrickHit(self):\n    for brick in self.bricks:\n        if brick.isOverlapping(self.ball_x, self.ball_y, 10, 10):\n            brick.lives -= 1\n            self.reward += 1\n            self.ball_dy = -self.ball_dy\n            return True\n        return False",
+    "subcalls": [],
+    "summary": "The method 'detectBrickHit' iterates through a collection of bricks and checks if the current brick overlaps with the ball's current position. If there is an overlap, the brick's life is reduced, the reward is incremented, and the ball's vertical speed is inverted. \n\nThe method takes no additional parameters and returns a Boolean value. It returns True if a brick was hit or False if none of the bricks were hit."
+  },
+  "6": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "BrickBreakerGym",
+    "method_name": "flip",
+    "start_line": 69,
+    "end_line": 70,
+    "code": "def flip(self):\n    with hold_canvas():\n        self.canvas.clear()\n        brick_x = [brick.x for brick in self.bricks]\n        brick_y = [brick.y for brick in self.bricks]\n        brick_width = [brick.width for brick in self.bricks]\n        brick_height = [brick.height for brick in self.bricks]\n        brick_color = [brick.getColor() for brick in self.bricks]\n        self.canvas.fill_styled_rects(brick_x, brick_y, brick_width, brick_height, brick_color)\n        self.canvas.fill_styled_rects([self.paddle_x], [self.paddle_y], [self.paddle_width], [self.paddle_height], [[50, 50, 50]])\n        self.canvas.fill_styled_circles([self.ball_x], [self.ball_y], [10], [0, 0, 0])\n        if self.ball_x > self.res_x - 10:\n            self.ball_dx = -self.ball_dx + (random.randint(0, 10) - 5) / 10\n        if self.ball_x <= 0:\n            self.ball_dx = -self.ball_dx + (random.randint(0, 10) - 5) / 10\n        if self.ball_y <= 0:\n            self.ball_dy = -self.ball_dy\n        self.ball_x += self.ball_dx\n        self.ball_y += self.ball_dy\n        self.detectBrickHit()",
+    "subcalls": [],
+    "summary": "The 'flip' method takes no parameters and returns no output. It iterates over all 'bricks' and generates their properties such as width and height using list comprehension. It then fills the canvas with the rectangle and circle shapes based on the properties of each object. Finally, it updates the position of the ball using the 'ball_dx' and 'ball_dy' properties and calls the 'detectBrickHit' method."
+  },
+  "7": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "BrickBreakerGym",
+    "method_name": "paddle_right",
+    "start_line": 101,
+    "end_line": 102,
+    "code": "def paddle_right(self):\n    self.paddle_x += 2",
+    "subcalls": [],
+    "summary": "The 'paddle_right' method is a function in a Python class that increments the x-coordinate of the paddle by 2, effectively moving the paddle to the right. The method takes no parameters and doesn't return any value. It directly modifies the object's state by updating the x-coordinate of the paddle."
+  },
+  "8": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "BrickBreakerGym",
+    "method_name": "paddle_left",
+    "start_line": 104,
+    "end_line": 105,
+    "code": "def paddle_left(self):\n    self.paddle_y -= 2",
+    "subcalls": [],
+    "summary": "The 'paddle_left' method updates the position of the paddle_y coordinate by subtracting 2. It is a method of a class which takes 'self' as parameter. The output of the method is None."
+  },
+  "9": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": "BrickBreakerGym",
+    "method_name": "on_keyboard_event",
+    "start_line": 108,
+    "end_line": 110,
+    "code": "@out.capture()\ndef on_keyboard_event(self, key, shift_key, ctrl_key, meta_key):\n    print('down')\n    self.paddle_x -= 5",
+    "subcalls": [],
+    "summary": "The \"on_keyboard_event\" method takes in four parameters - key, shift_key, ctrl_key, and meta_key. These parameters represent the state of the keyboard keys pressed by the user. \n\nThe method then prints the string 'down' and updates the value of \"self.paddle_x\" by subtracting 5.\n\nThis method does not have a specific output, as it prints 'down' and modifies an instance variable. The \"@out.capture()\" decorator suggests that the output may be captured for further use or display.\n\nOverall, this method appears to be part of a larger program that likely involves some kind of game or graphical interface, as it updates the value of \"self.paddle_x\"."
+  },
+  "10": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 8,
+    "end_line": 13,
+    "code": "def __init__(self, x, y, width, height, lives=5):\n    self.x = x\n    self.y = y\n    self.width = width\n    self.height = height\n    self.lives = lives",
+    "subcalls": [],
+    "summary": "The method `__init__` initializes an object with arguments `x`, `y`, `width`, `height`, and `lives` (which has a default value of 5). This method assigns these arguments to respective instance variables: `self.x`, `self.y`, `self.width`, `self.height`, and `self.lives`. The method does not have any output."
+  },
+  "11": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "isOverlapping",
+    "start_line": 15,
+    "end_line": 16,
+    "code": "def isOverlapping(self, x, y, width, height):\n    return x >= self.x and y >= self.y and (x + width <= self.x + self.width) and (y + height <= self.y + self.height)",
+    "subcalls": [],
+    "summary": "The method 'isOverlapping' takes in 4 parameters, namely x-coordinate, y-coordinate, width and height. This method returns True if the given coordinates and dimensions overlap with the coordinates and dimensions of the object it is called upon. Otherwise, it returns False. The method checks if the x-coordinate and y-coordinate of the given object are greater than or equal to the x-coordinate and y-coordinate of the object it is called upon. It also checks if the width and height of the given object are less than or equal to the width and height of the object it is called upon."
+  },
+  "12": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "getColor",
+    "start_line": 18,
+    "end_line": 19,
+    "code": "def getColor(self):\n    return [0, 0, 0]",
+    "subcalls": [],
+    "summary": "The 'getColor' method takes no parameters and returns a list of three integers all set to zero. There are no subcalls within the method."
+  },
+  "13": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 22,
+    "end_line": 49,
+    "code": "def __init__(self, res_x, res_y, y_fill_proportion=0.5, brick_inlay_proportion=0.3, brick_width=100, brick_height=20):\n    self.res_x = res_x\n    self.res_y = res_y\n    self.canvas = Canvas(width=res_x, height=res_y, sync_image_data=True)\n    self.canvas.layout.width = str(res_x) + 'px'\n    self.canvas.layout.height = str(res_y) + 'px'\n    self.canvas.alpha = 0\n    self.bricks = []\n    self.paddle_width = 150\n    self.paddle_height = 20\n    self.paddle_x = 30\n    self.paddle_y = self.res_y - self.paddle_height\n    self.ball_x = 50\n    self.ball_y = self.paddle_y - 20\n    self.ball_dx = 1\n    self.ball_dy = -0.5\n    self.reward = 0\n    self.canvas.on_key_down(self.on_keyboard_event)\n    x_step = brick_width + 2\n    y_step = brick_height + 2\n    for x in range(0, int(res_x / x_step)):\n        start_x = x * x_step\n        for y in range(0, int(brick_inlay_proportion * res_y / y_step)):\n            start_y = y * y_step\n            if random.randint(0, 100) < brick_inlay_proportion * 100:\n                self.bricks.append(Brick(start_x, start_y, brick_width, brick_height))",
+    "subcalls": [],
+    "summary": "The method \"__init__\" initializes the game board and its properties. The parameters include 'res_x' and 'res_y' representing the resolution of the game board, 'y_fill_proportion' , 'brick_inlay_proportion', 'brick_width', and 'brick_height' which are optional parameters. The output of the method is an initialized game board with properties such as bricks, paddles, ball, and rewards. \n\nThe subcalls include initializing the canvas with the 'Canvas' class, setting canvas' width and height, creating bricks on the game board by calling the 'Brick' class, and initializing the on-key event for the game board using the 'on_keyboard_event' method."
+  },
+  "14": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "startRender",
+    "start_line": 57,
+    "end_line": 58,
+    "code": "def startRender(self):\n    display(self.canvas)",
+    "subcalls": [],
+    "summary": "The 'startRender' method displays the canvas. It does not take any input parameters and does not return any output."
+  },
+  "15": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "detectBrickHit",
+    "start_line": 60,
+    "end_line": 61,
+    "code": "def detectBrickHit(self):\n    for brick in self.bricks:\n        if brick.isOverlapping(self.ball_x, self.ball_y, 10, 10):\n            brick.lives -= 1\n            self.reward += 1\n            self.ball_dy = -self.ball_dy\n            return True\n        return False",
+    "subcalls": [
+      11
+    ],
+    "summary": "The 'detectBrickHit' method takes in no parameters. This method checks for the collision or overlapping of the ball with each of the bricks. If the ball overlaps with any brick, it reduces the number of lives of that brick by 1, increases the reward, changes the direction of the ball, and returns True. If no collision is detected, it returns False. The subcall 'isOverlapping' is used to check if the ball overlaps with any brick."
+  },
+  "16": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "flip",
+    "start_line": 69,
+    "end_line": 70,
+    "code": "def flip(self):\n    with hold_canvas():\n        self.canvas.clear()\n        brick_x = [brick.x for brick in self.bricks]\n        brick_y = [brick.y for brick in self.bricks]\n        brick_width = [brick.width for brick in self.bricks]\n        brick_height = [brick.height for brick in self.bricks]\n        brick_color = [brick.getColor() for brick in self.bricks]\n        self.canvas.fill_styled_rects(brick_x, brick_y, brick_width, brick_height, brick_color)\n        self.canvas.fill_styled_rects([self.paddle_x], [self.paddle_y], [self.paddle_width], [self.paddle_height], [[50, 50, 50]])\n        self.canvas.fill_styled_circles([self.ball_x], [self.ball_y], [10], [0, 0, 0])\n        if self.ball_x > self.res_x - 10:\n            self.ball_dx = -self.ball_dx + (random.randint(0, 10) - 5) / 10\n        if self.ball_x <= 0:\n            self.ball_dx = -self.ball_dx + (random.randint(0, 10) - 5) / 10\n        if self.ball_y <= 0:\n            self.ball_dy = -self.ball_dy\n        self.ball_x += self.ball_dx\n        self.ball_y += self.ball_dy\n        self.detectBrickHit()",
+    "subcalls": [
+      15,
+      12
+    ],
+    "summary": "The 'flip' method takes no parameters and uses canvas to draw the bricks, paddle, and ball. It also updates the direction of the ball based on its position and calls the 'detectBrickHit' method to detect collisions with bricks. The 'detectBrickHit' subcall checks for collisions by calling the 'isOverlapping' method. The 'getColor' subcall returns a list of three integers all set to zero. The output of the 'flip' method is None as it only updates the canvas."
+  },
+  "17": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "paddle_right",
+    "start_line": 101,
+    "end_line": 102,
+    "code": "def paddle_right(self):\n    self.paddle_x += 2",
+    "subcalls": [],
+    "summary": "The 'paddle_right' method is defined within a class and takes no parameters. It increments the value of 'paddle_x' by 2, which moves the object to the right. It does not return any output."
+  },
+  "18": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "paddle_left",
+    "start_line": 104,
+    "end_line": 105,
+    "code": "def paddle_left(self):\n    self.paddle_y -= 2",
+    "subcalls": [],
+    "summary": "The 'paddle_left' method subtracts 2 from the y-coordinate of the paddle. It does not take any input parameters and does not have an output."
+  },
+  "19": {
+    "file_name": "BrickBreakerGym.py",
+    "class_name": null,
+    "method_name": "on_keyboard_event",
+    "start_line": 108,
+    "end_line": 110,
+    "code": "@out.capture()\ndef on_keyboard_event(self, key, shift_key, ctrl_key, meta_key):\n    print('down')\n    self.paddle_x -= 5",
+    "subcalls": [],
+    "summary": "The 'on_keyboard_event' method takes four parameters - key, shift_key, ctrl_key, and meta_key. When the method is called, it prints 'down' and subtracts 5 from the 'paddle_x' attribute of the object that calls this method. There is no output returned from this method. The 'out.capture()' decorator is used to capture any standard output generated by this method. This method does not have any subcalls."
+  },
+  "20": {
+    "file_name": "DeepQAgent.py",
+    "class_name": "Agent",
+    "method_name": "__init__",
+    "start_line": 6,
+    "end_line": 21,
+    "code": "def __init__(self, input_width, input_height, action_set_size, model_update_horizon=20, discount_factor=0.8, alpha=0.8, epsilon_greedy=0.1):\n    self.model = DeepQNet.Net(input_width, input_height, action_set_size)\n    self.criterion = torch.nn.MSELoss()\n    self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.01)\n    self.max_buffer_len = model_update_horizon * 10\n    self.model_update_horizon = model_update_horizon\n    self.alpha = alpha\n    self.discount_factor = discount_factor\n    self.epsilon_greedy = epsilon_greedy\n    self.action_set_size = action_set_size\n    self.state_history = []\n    self.action_history = []\n    self.reward_history = [0]\n    self.inference_history = []",
+    "subcalls": [],
+    "summary": "The '__init__' method of a class initializes its instance variables with the provided parameters. This method takes in seven parameters, namely input_width, input_height, action_set_size, model_update_horizon, discount_factor, alpha, and epsilon_greedy. \n\nThe output of this method is None as it is just initializing the instance variables. \n\nThis method calls the 'Net' method from the DeepQNet class to initialize a deep neural network with the given input_width, input_height, and action_set_size. It also initializes the criterion, optimizer, and the maximum length of a buffer. Lastly, it initializes the various histories needed to keep track of the state, action, reward, and inference of the deep neural network."
+  },
+  "21": {
+    "file_name": "DeepQAgent.py",
+    "class_name": "Agent",
+    "method_name": "determineAction",
+    "start_line": 24,
+    "end_line": 29,
+    "code": "def determineAction(self, state, epsilon_greedy=True):\n    inference = self.model.forward(torch.unsqueeze(state, dim=0))\n    self.inference_history.append(inference)\n    if epsilon_greedy and random.randint(0, 100) < self.epsilon_greedy * 100:\n        return random.randint(0, self.action_set_size - 1)\n    return torch.argmax(inference)",
+    "subcalls": [],
+    "summary": "The 'determineAction' method takes in a state and a boolean parameter 'epsilon_greedy', which is set to True by default. It returns an action based on the given state using an epsilon-greedy strategy. \n\nFirst, the method passes the state through a neural network model and appends the inference to a history list. If the epsilon_greedy parameter is True, it generates a random integer between 0 and the size of the action set. Otherwise, it selects the action with the highest probability from the output inference.\n\nIn summary, this method uses a neural network model to determine the best action given a state, while also allowing for some level of randomness through an epsilon-greedy strategy."
+  },
+  "22": {
+    "file_name": "DeepQAgent.py",
+    "class_name": "Agent",
+    "method_name": "apply",
+    "start_line": 31,
+    "end_line": 39,
+    "code": "def apply(self, state, action, reward, training=True):\n    if len(self.state_history) >= self.max_buffer_len:\n        if training:\n            self.updateWeights()\n        self.state_history = []\n        self.action_history = []\n        self.reward_history = [0]\n        self.inference_history = []\n    if training:\n        self.state_history.append(torch.tensor(state.astype(np.float32)))\n        self.action_history.append(action)\n        self.reward_history.append(reward)",
+    "subcalls": [],
+    "summary": "The 'apply' method takes in four parameters- 'state' (numpy array of floats), 'action' (a value), 'reward' (a value) and 'training' (a boolean that is true by default). \n\nIf the length of the 'state_history' list is greater than or equal to the maximum buffer length, and 'training' is true, the 'updateWeights' method is called. \n\nThe 'state_history', 'action_history', 'reward_history' and 'inference_history' lists are reset. \n\nIf 'training' is true, the current state, action and reward are appended to their respective lists. \n\nThe output of this method is None."
+  },
+  "23": {
+    "file_name": "DeepQAgent.py",
+    "class_name": "Agent",
+    "method_name": "calculateBellmanUpdateValue",
+    "start_line": 45,
+    "end_line": 55,
+    "code": "def calculateBellmanUpdateValue(self, loc, action):\n    inferenced_q_vals = self.inference_history[loc][0].clone()\n    cur_q_val = inferenced_q_vals[action]\n    next_q_val = max(self.inference_history[loc + 1][0].clone())\n    next_reward = self.reward_history[loc + 1]\n    bellman_update = (1 - self.alpha) * cur_q_val + self.alpha * (next_reward + self.discount_factor * next_q_val)\n    ret = inferenced_q_vals\n    ret[action] = bellman_update\n    return ret",
+    "subcalls": [],
+    "summary": "The 'calculateBellmanUpdateValue' method takes two parameters 'loc' and 'action'. It utilizes the parameters to calculate the Bellman update value for the current state-action pair. The output is the inferred Q-Values where the Q-Value for the current action is updated based on the Bellman update equation.\n\nThe method first clones and retrieves the inference history at the current location, then assigns the Q-Value for the current action to 'cur_q_val'. The Q-Value with the highest value at the next location is assigned to 'next_q_val'. The next reward, which is the reward received at the next location, is assigned to 'next_reward'. The Bellman update value is then calculated using these values and assigned to 'bellman_update'.\n\nThe updated Q-Values are assigned to the cloned inferenced Q-Values, and the updated Q-Value for the current action is assigned to 'bellman_update'. Finally, the method returns the inferred Q-Values where the Q-Value for the current action has been updated according to the Bellman update equation."
+  },
+  "24": {
+    "file_name": "DeepQAgent.py",
+    "class_name": "Agent",
+    "method_name": "updateWeights",
+    "start_line": 57,
+    "end_line": 74,
+    "code": "def updateWeights(self):\n    concat_state = []\n    for i in range(2, len(self.state_history) - 1):\n        concat_state.append(torch.stack((self.state_history[i - 2], self.state_history[i - 1], self.state_history[i])))\n    self.optimizer.zero_grad()\n    inputs = torch.stack(concat_state)\n    labels = torch.vstack([self.calculateBellmanUpdateValue(v, self.action_history[v]) for v in range(2, len(self.state_history) - 1)])\n    outputs = self.model(inputs)\n    loss = self.criterion(outputs, labels)\n    loss.backward(retain_graph=True)\n    self.optimizer.step()\n    print('Loss: ', loss)\n    print('Avg reward: ', sum(self.reward_history) / len(self.reward_history))",
+    "subcalls": [],
+    "summary": "The 'updateWeights' Python method takes no parameters and updates the weights of the model using backpropagation. The output is the loss and the average reward of the agent. \n\nThe method first concatenates the previous three states of the agent's history into a single tensor. It then calculates the Bellman update values for each state-action pair, and uses them as labels for the training process. \n\nAfterwards, it passes the concatenated input states to the model and calculates the loss between the predicted output and the labels. It then backpropagates the loss through the model and updates the weights using an optimizer. \n\nFinally, it prints out the loss and the average reward of the agent."
+  },
+  "25": {
+    "file_name": "DeepQAgent.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 6,
+    "end_line": 21,
+    "code": "def __init__(self, input_width, input_height, action_set_size, model_update_horizon=20, discount_factor=0.8, alpha=0.8, epsilon_greedy=0.1):\n    self.model = DeepQNet.Net(input_width, input_height, action_set_size)\n    self.criterion = torch.nn.MSELoss()\n    self.optimizer = torch.optim.Adam(self.model.parameters(), lr=0.01)\n    self.max_buffer_len = model_update_horizon * 10\n    self.model_update_horizon = model_update_horizon\n    self.alpha = alpha\n    self.discount_factor = discount_factor\n    self.epsilon_greedy = epsilon_greedy\n    self.action_set_size = action_set_size\n    self.state_history = []\n    self.action_history = []\n    self.reward_history = [0]\n    self.inference_history = []",
+    "subcalls": [],
+    "summary": "The `__init__` method initializes an object of the class. The method takes the following parameters: `input_width`, `input_height`, `action_set_size`, `model_update_horizon` (default 20), `discount_factor` (default 0.8), `alpha` (default 0.8), and `epsilon_greedy` (default 0.1).\n\nThe output of the method is an initialized object of the class.\n\nThe method instantiates multiple variables and objects, such as `self.model` which is a `DeepQNet.Net` object initialized with `input_width`, `input_height`, and `action_set_size`. It also creates a criterion object `self.criterion` which is set as the `torch.nn.MSELoss()`.\n\nThe method initializes an optimizer `self.optimizer`, to update the parameters of the `self.model` object using the Adam optimizer with a learning rate of 0.01. It sets the `max_buffer_len` variable to `model_update_horizon * 10`, and initializes various other variables such as `self.state_history`, `self.action_history`, `self.reward_history` and `self.inference_history`."
+  },
+  "26": {
+    "file_name": "DeepQAgent.py",
+    "class_name": null,
+    "method_name": "determineAction",
+    "start_line": 24,
+    "end_line": 29,
+    "code": "def determineAction(self, state, epsilon_greedy=True):\n    inference = self.model.forward(torch.unsqueeze(state, dim=0))\n    self.inference_history.append(inference)\n    if epsilon_greedy and random.randint(0, 100) < self.epsilon_greedy * 100:\n        return random.randint(0, self.action_set_size - 1)\n    return torch.argmax(inference)",
+    "subcalls": [],
+    "summary": "This is a method that takes in a 'state' as input and uses a PyTorch model to generate an 'inference'. The 'inference' is appended to a history of inferences, 'inference_history'. If 'epsilon_greedy' is set to True, then the method randomly selects an action by returning a random integer between 0 and 'action_set_size'. Otherwise, it returns the action with the highest probability as determined by the model's inference using 'torch.argmax'. The output of the method is the selected action."
+  },
+  "27": {
+    "file_name": "DeepQAgent.py",
+    "class_name": null,
+    "method_name": "apply",
+    "start_line": 31,
+    "end_line": 39,
+    "code": "def apply(self, state, action, reward, training=True):\n    if len(self.state_history) >= self.max_buffer_len:\n        if training:\n            self.updateWeights()\n        self.state_history = []\n        self.action_history = []\n        self.reward_history = [0]\n        self.inference_history = []\n    if training:\n        self.state_history.append(torch.tensor(state.astype(np.float32)))\n        self.action_history.append(action)\n        self.reward_history.append(reward)",
+    "subcalls": [],
+    "summary": "The 'apply' method takes in four parameters: 'self', 'state', 'action', and 'reward', where 'self' refers to the class instance, 'state' refers to the state of the system, 'action' refers to the action taken by the agent, and 'reward' refers to the reward obtained by the agent. \n\nThe method appends the state, action, and reward histories to the corresponding lists and updates the weights if the training flag is set and the state history exceeds maximum buffer length. The method returns no output."
+  },
+  "28": {
+    "file_name": "DeepQAgent.py",
+    "class_name": null,
+    "method_name": "calculateBellmanUpdateValue",
+    "start_line": 45,
+    "end_line": 55,
+    "code": "def calculateBellmanUpdateValue(self, loc, action):\n    inferenced_q_vals = self.inference_history[loc][0].clone()\n    cur_q_val = inferenced_q_vals[action]\n    next_q_val = max(self.inference_history[loc + 1][0].clone())\n    next_reward = self.reward_history[loc + 1]\n    bellman_update = (1 - self.alpha) * cur_q_val + self.alpha * (next_reward + self.discount_factor * next_q_val)\n    ret = inferenced_q_vals\n    ret[action] = bellman_update\n    return ret",
+    "subcalls": [],
+    "summary": "The 'calculateBellmanUpdateValue' method takes two parameters - 'loc' and 'action' - representing the location and action in a Markov Decision Process. \n\nThe method retrieves the inferred Q-values for the current location, the current Q-value for the specified action at that location, the maximum inferred Q-value for the next location, the reward for the next location, and the hyperparameters alpha and discount_factor. \n\nUsing this information, the method calculates the Bellman update equation for the specified action, which is a weighted average of the current and estimated future Q-values. \n\nFinally, the method returns a copy of the inferred Q-values with the updated Q-value for the specified action."
+  },
+  "29": {
+    "file_name": "DeepQAgent.py",
+    "class_name": null,
+    "method_name": "updateWeights",
+    "start_line": 57,
+    "end_line": 74,
+    "code": "def updateWeights(self):\n    concat_state = []\n    for i in range(2, len(self.state_history) - 1):\n        concat_state.append(torch.stack((self.state_history[i - 2], self.state_history[i - 1], self.state_history[i])))\n    self.optimizer.zero_grad()\n    inputs = torch.stack(concat_state)\n    labels = torch.vstack([self.calculateBellmanUpdateValue(v, self.action_history[v]) for v in range(2, len(self.state_history) - 1)])\n    outputs = self.model(inputs)\n    loss = self.criterion(outputs, labels)\n    loss.backward(retain_graph=True)\n    self.optimizer.step()\n    print('Loss: ', loss)\n    print('Avg reward: ', sum(self.reward_history) / len(self.reward_history))",
+    "subcalls": [
+      28
+    ],
+    "summary": "The 'updateWeights' method takes no parameters and creates a concatenated state representation from the current state history, which is used to calculate a loss function for the neural network model using the Bellman update equation. \n\nThe 'calculateBellmanUpdateValue' method is called for each state in the history, which takes a location and action as parameters. It retrieves the current and estimated future Q-values for the specified action, calculates the weighted average of these values using the Bellman update equation, and returns a copy of the inferred Q-values with the updated Q-value for the specified action.\n\nThe output of the 'updateWeights' method is the updated neural network model with the weights adjusted to minimize the loss function. The method also prints out the loss and average reward for the model during the update."
+  },
+  "30": {
+    "file_name": "DeepQNet.py",
+    "class_name": "Net",
+    "method_name": "__init__",
+    "start_line": 5,
+    "end_line": 14,
+    "code": "def __init__(self, input_width, input_height, action_set_size, bw=True, image_stack_size=3):\n    super().__init__()\n    input_channels = 3 * image_stack_size if not bw else image_stack_size\n    self.conv1 = nn.Conv2d(input_channels, 4, 4)\n    self.pool = nn.MaxPool2d(2, 2)\n    self.conv2 = nn.Conv2d(4, 8, 2)\n    self.fc1 = nn.Linear(30752, 100)\n    self.fc2 = nn.Linear(100, 200)\n    self.fc3 = nn.Linear(200, action_set_size)",
+    "subcalls": [],
+    "summary": "This is the constructor for a neural network model used in reinforcement learning, which takes in parameters such as input image dimensions, action set size, and whether to use black and white images. It initializes several layers in the model, including convolutional and linear layers that form the network architecture, and the output represents the initialized model. The constructor utilizes PyTorch's module class to define these layers which use convolution, max-pooling, and linear transformations."
+  },
+  "31": {
+    "file_name": "DeepQNet.py",
+    "class_name": "Net",
+    "method_name": "forward",
+    "start_line": 16,
+    "end_line": 26,
+    "code": "def forward(self, x):\n    x = self.pool(F.relu(self.conv1(x)))\n    x = self.pool(F.relu(self.conv2(x)))\n    x = flatten(x, 1)\n    x = F.relu(self.fc1(x))\n    x = F.relu(self.fc2(x))\n    x = self.fc3(x)\n    return x",
+    "subcalls": [],
+    "summary": "The 'forward' method takes in an input tensor 'x' as a parameter and applies a sequence of operations to it. The operations include:  \n1. Applying convolutions with ReLU activation function \n2. Applying max pooling \n3. Flattening the output \n4. Applying fully connected layers with ReLU activation function \n5. Returning the output of the last fully connected layer. \n\nThe output of the method is the result of the final fully connected layer.\n\nSubcall Summaries- \n1. conv1 - A convolutional layer with ReLU activation function \n2. conv2 - Another convolutional layer with ReLU activation function \n3. pool - A max pooling operation \n4. flatten - Flattens the output tensor to a 1D vector \n5. fc1 - A fully connected layer with ReLU activation function \n6. fc2 - Another fully connected layer with ReLU activation function \n7. fc3 - The final fully connected layer without any activation function."
+  },
+  "32": {
+    "file_name": "DeepQNet.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 5,
+    "end_line": 14,
+    "code": "def __init__(self, input_width, input_height, action_set_size, bw=True, image_stack_size=3):\n    super().__init__()\n    input_channels = 3 * image_stack_size if not bw else image_stack_size\n    self.conv1 = nn.Conv2d(input_channels, 4, 4)\n    self.pool = nn.MaxPool2d(2, 2)\n    self.conv2 = nn.Conv2d(4, 8, 2)\n    self.fc1 = nn.Linear(30752, 100)\n    self.fc2 = nn.Linear(100, 200)\n    self.fc3 = nn.Linear(200, action_set_size)",
+    "subcalls": [
+      13,
+      25,
+      32
+    ],
+    "summary": "The `__init__` method initializes an object of a deep Q-learning network class. It takes in parameters for the input width, input height, action set size, bw (optional parameter for black and white images), and image stack size. The method initializes several variables and objects, such as convolutional and linear layers for the neural network, a criterion object, and an optimizer. The output of the method is an initialized object of the deep Q-learning network class."
+  },
+  "33": {
+    "file_name": "DeepQNet.py",
+    "class_name": null,
+    "method_name": "forward",
+    "start_line": 16,
+    "end_line": 26,
+    "code": "def forward(self, x):\n    x = self.pool(F.relu(self.conv1(x)))\n    x = self.pool(F.relu(self.conv2(x)))\n    x = flatten(x, 1)\n    x = F.relu(self.fc1(x))\n    x = F.relu(self.fc2(x))\n    x = self.fc3(x)\n    return x",
+    "subcalls": [],
+    "summary": "This method takes an input tensor 'x' and applies a series of operations on it. The input tensor is first subjected to two convolutional layers with ReLU activation, followed by a Max Pooling operation. Then, the tensor is flattened and processed through two fully connected layers with ReLU activation. Finally, the output is generated through a fully connected layer and returned. This method does not have any parameters and its output is a processed tensor."
+  },
+  "34": {
+    "file_name": "PongGym.py",
+    "class_name": "Paddle",
+    "method_name": "__init__",
+    "start_line": 5,
+    "end_line": 9,
+    "code": "def __init__(self, x, y, width, height):\n    self.x = x\n    self.y = y\n    self.w = width\n    self.h = height",
+    "subcalls": [],
+    "summary": "The Python method '__init__' initializes a class object with four parameters: x, y, width, and height. The method assigns the object variables corresponding to input parameters to their respective values. The method does not have any return output."
+  },
+  "35": {
+    "file_name": "PongGym.py",
+    "class_name": "Paddle",
+    "method_name": "drawPaddle",
+    "start_line": 11,
+    "end_line": 12,
+    "code": "def drawPaddle(self, curState):\n    curState[self.y:self.y + self.h, self.x:self.x + self.w] = 255",
+    "subcalls": [],
+    "summary": "The \u2018drawPaddle\u2019 method in Python takes two parameters namely \u2018self\u2019 and \u2018curState\u2019. It draws a paddle on a given state using the input parameters. The output of this method is an updated version of the input state with the paddle drawn on it. This method performs a single operation where the rectangular area representing the paddle is filled with the value 255, which indicates white color. There are no sub-calls within this method."
+  },
+  "36": {
+    "file_name": "PongGym.py",
+    "class_name": "Paddle",
+    "method_name": "detectHit",
+    "start_line": 14,
+    "end_line": 20,
+    "code": "def detectHit(self, x, y, w, h):\n    \"\"\"     rect1.x < self.x + self.w and                 rect1.x + rect1.w > self.x and                 rect1.y < self.y + self.h and                 rect1.h + rect1.y > self.y\n        \"\"\"\n    return x < self.x + self.w and x + w > self.x and (y < self.y + self.h) and (h + y > self.y)",
+    "subcalls": [],
+    "summary": "The 'detectHit' Python method checks whether a rectangle's coordinates and dimensions overlap with another given rectangle's coordinates and dimensions. The method takes in parameters 'x', 'y', 'w', and 'h' which represent the top-left corner coordinates and width and height dimensions of the rectangle that will be compared with the object. The output is a boolean value indicating whether the two rectangles overlap or not.\n\nThe method checks if the given rectangle's horizontal coordinate is less than the object's horizontal coordinate plus its width and if the given rectangle's horizontal coordinate plus its width is greater than the object's horizontal coordinate. It also checks if the given rectangle's vertical coordinate is less than the object's vertical coordinate plus its height and if the given rectangle's vertical coordinate plus its height is greater than the object's vertical coordinate.\n\nThis method is called within a larger program and its main function is to check whether two rectangles overlap."
+  },
+  "37": {
+    "file_name": "PongGym.py",
+    "class_name": "Ball",
+    "method_name": "__init__",
+    "start_line": 26,
+    "end_line": 31,
+    "code": "def __init__(self, x, y):\n    self.x = x\n    self.y = y\n    self.dx = 7\n    self.dy = 7",
+    "subcalls": [],
+    "summary": "The '__init__' method is a constructor method in Python used to initialize the attributes of an object. It takes two parameters 'x' and 'y'. The output of this method is the initialization of the instance variables of the object.\n\nThe method initializes the attribute 'x' and 'y' with the values passed as parameters. Additionally, it initializes two other attributes 'dx' and 'dy' with a value of 7. There are no subcalls within this method."
+  },
+  "38": {
+    "file_name": "PongGym.py",
+    "class_name": "Ball",
+    "method_name": "drawBall",
+    "start_line": 33,
+    "end_line": 34,
+    "code": "def drawBall(self, curState):\n    curState[self.y:self.y + 5, self.x:self.x + 5] = 255",
+    "subcalls": [],
+    "summary": "This Python method named 'drawBall' takes two parameters, 'self' and 'curState'. It sets a specific range of values in the array 'curState' to 255. The range is determined by the variables 'self.y' and 'self.x', which denote the starting coordinates of the range, and the range span of 5. The method does not return any output explicitly, but it modifies the 'curState' array passed as a parameter."
+  },
+  "39": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "__init__",
+    "start_line": 37,
+    "end_line": 41,
+    "code": "def __init__(self, width, height):\n    super().__init__(width, height, 9)\n    self.paddleL = Paddle(0, 30, 10, 20)\n    self.paddleR = Paddle(self.width - 10, 30, 10, 20)\n    self.ball = Ball(100, 100)",
+    "subcalls": [],
+    "summary": "The '__init__' method initializes an instance of a class with parameters 'width' and 'height'. It also calls submethods: '__init__' of the parent/superclass with arguments 'width', 'height' and '9', 'Paddle' with arguments '0', '30', '10' and '20', and 'Ball' with arguments '100' and '100'. The method has no explicit output, but it initializes the attributes 'paddleL', 'paddleR' and 'ball' of the instance."
+  },
+  "40": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "paddleRUp",
+    "start_line": 43,
+    "end_line": 44,
+    "code": "def paddleRUp(self):\n    if self.paddleR.y + 3 + self.paddleR.h <= self.height:\n        self.paddleR.y += 3",
+    "subcalls": [],
+    "summary": "The 'paddleRUp' method moves the right paddle up by 3 units if it is within the game height bounds. The method takes no parameters and its only output is the updated position of the right paddle."
+  },
+  "41": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "paddleRDown",
+    "start_line": 46,
+    "end_line": 47,
+    "code": "def paddleRDown(self):\n    if self.paddleR.y - 3 >= 0:\n        self.paddleR.y -= 3",
+    "subcalls": [],
+    "summary": "The 'paddleRDown' method takes in the current object instance 'self' and moves the right paddle downwards by 3 units if it is within the game screen (y - 3 >= 0). It does not have any parameters and simply updates the object instance attribute, 'paddleR.y'. It does not have any subcalls."
+  },
+  "42": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "paddleLUp",
+    "start_line": 49,
+    "end_line": 50,
+    "code": "def paddleLUp(self):\n    if self.paddleL.y + 3 + self.paddleR.h <= self.height:\n        self.paddleL.y += 3",
+    "subcalls": [],
+    "summary": "The 'paddleLUp' method takes no parameters and increments the vertical position of the left paddle by 3 units only if it won't go beyond the height of the game screen when combined with the height of the right paddle. The output of the method is None (no value is returned)."
+  },
+  "43": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "paddleLDown",
+    "start_line": 52,
+    "end_line": 53,
+    "code": "def paddleLDown(self):\n    if self.paddleL.y - 3 >= 0:\n        self.paddleL.y -= 3",
+    "subcalls": [],
+    "summary": "This is a Python method called 'paddleLDown' which moves a left paddle downwards in a game. The method takes no input parameters and returns no output. If the current y coordinate of the left paddle minus 3 is greater than or equal to zero, the method decreases the y coordinate of the left paddle by 3."
+  },
+  "44": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "applyAction",
+    "start_line": 56,
+    "end_line": 82,
+    "code": "def applyAction(self, action):\n    if action == 0:\n        if self.paddleL.y - 3 >= 0:\n            self.paddleL.y -= 3\n    if action == 1:\n        if self.paddleL.y + 3 + self.paddleR.h <= self.height:\n            self.paddleL.y += 3\n    if action == 2:\n        if self.paddleR.y - 3 >= 0:\n            self.paddleR.y -= 3\n    if action == 3:\n        if self.paddleR.y + 3 + self.paddleR.h <= self.height:\n            self.paddleR.y += 3\n    if action == 4:\n        self.paddleLDown()\n        self.paddleRDown()\n    if action == 5:\n        self.paddleLUp()\n        self.paddleRUp()\n    if action == 6:\n        self.paddleLUp()\n        self.paddleRDown()\n    if action == 7:\n        self.paddleLDown()\n        self.paddleRUp()\n    return self.update()",
+    "subcalls": [],
+    "summary": "The 'applyAction' method takes in two parameters, 'self' and 'action'. The 'self' parameter is a reference to the object itself and 'action' is an integer value representing the action to be performed. \n\nThe method checks for the value of the 'action' parameter and updates the position of the left paddle, right paddle or both paddles based on the value. It also calls various sub-calls like 'paddleLUp', 'paddleLDown' and 'update', which are not defined in the method. \n\nThe output of the method is the result of the 'update' sub-call."
+  },
+  "45": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "update",
+    "start_line": 85,
+    "end_line": 112,
+    "code": "def update(self):\n    self.ball.x += self.ball.dx\n    self.ball.y += self.ball.dy\n    if self.paddleL.detectHit(self.ball.x, self.ball.y, 5, 5) or self.paddleR.detectHit(self.ball.x, self.ball.y, 10, 10):\n        dx_r = random.randint(-3, 3)\n        dy_r = random.randint(-3, 3)\n        self.ball.dx = -self.ball.dx + (dx_r if dx_r != -self.ball.dx else 0)\n        self.ball.dy = -self.ball.dy + (dy_r if dy_r != -self.ball.dy else 0)\n        return 100\n    if self.ball.x < 0 or self.ball.x + 5 > self.width:\n        self.ball.x = random.randint(30, 200)\n        self.ball.y = random.randint(30, 200)\n        return -100\n    if self.ball.y < 0 or self.ball.y + 5 > self.height:\n        self.ball.dy = -self.ball.dy\n    self.clear_state()\n    self.paddleL.drawPaddle(self.state)\n    self.paddleR.drawPaddle(self.state)\n    self.ball.drawBall(self.state)\n    return 0",
+    "subcalls": [],
+    "summary": "The 'update' method updates the position of a ball object by adding its velocity to its current location. It detects whether the ball collides with a left or right paddle object, then changes the direction of the ball and returns 100 if a collision occurs. If the ball hits the top or bottom wall, it changes the direction of the ball without returning anything. If the ball goes out of bounds on either side, it returns -100 and places the ball at a random location. Finally, it clears the state of the canvas, draws the paddles and ball at their new positions, and returns 0."
+  },
+  "46": {
+    "file_name": "PongGym.py",
+    "class_name": "PongGym",
+    "method_name": "reset",
+    "start_line": 114,
+    "end_line": 126,
+    "code": "def reset(self):\n    self.paddleL.y = random.randint(0, 200)\n    self.paddleR.y = random.randint(0, 200)\n    self.ball.x = random.randint(50, 200)\n    self.ball.y = random.randint(0, 200)\n    self.ball.dx = random.randint(-3, 3)\n    self.ball.dy = random.randint(-3, 3)\n    if self.ball.dx == 0:\n        self.ball.dx = -1\n    if self.ball.dy == 0:\n        self.ball.dy = -1",
+    "subcalls": [],
+    "summary": "The 'reset' method sets the initial state of the game by randomizing the position and movement of the paddles and ball. The method takes no parameters and returns nothing. The random positions of the paddles and ball are determined by the 'random' module in Python. The position of the ball and paddles are set by modifying their respective x and y attributes. The movement of the ball is also randomized by modifying its dx and dy attributes. If either the dx or dy attribute of the ball is zero, their value is set to -1 to ensure that the ball doesn't move in a straight line."
+  },
+  "47": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 5,
+    "end_line": 9,
+    "code": "def __init__(self, x, y, width, height):\n    self.x = x\n    self.y = y\n    self.w = width\n    self.h = height",
+    "subcalls": [],
+    "summary": "The '__init__' method takes four parameters: 'x', 'y', 'width', and 'height'. It initializes the instance variables 'x', 'y', 'w' (width), and 'h' (height) to the values of the parameters passed. The method doesn't have any output, but it creates an instance of the class with the initialized variables.\n\nThere are no subcalls in this method, so there are no additional summaries to include."
+  },
+  "48": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "drawPaddle",
+    "start_line": 11,
+    "end_line": 12,
+    "code": "def drawPaddle(self, curState):\n    curState[self.y:self.y + self.h, self.x:self.x + self.w] = 255",
+    "subcalls": [],
+    "summary": "This is a Python method called 'drawPaddle' which takes two parameters- 'self' and 'curState'. It assigns the value 255 to a portion of 'curState' array starting from 'y' to 'y+h' rows and from 'x' to 'x+w' columns. This method does not return any value.\n\nThe method 'drawPaddle' is a simple image drawing function which requires two arguments. 'curState' is an input image where a paddle is to be drawn. 'self' refers to the instance of a class and contains attributes such as paddle height, paddle width, and its position. The method assigns the value 255 to the paddle region in 'curState', which sets its color to white."
+  },
+  "49": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "detectHit",
+    "start_line": 14,
+    "end_line": 20,
+    "code": "def detectHit(self, x, y, w, h):\n    \"\"\"     rect1.x < self.x + self.w and                 rect1.x + rect1.w > self.x and                 rect1.y < self.y + self.h and                 rect1.h + rect1.y > self.y\n        \"\"\"\n    return x < self.x + self.w and x + w > self.x and (y < self.y + self.h) and (h + y > self.y)",
+    "subcalls": [],
+    "summary": "The Python method 'detectHit' takes in four parameters- x and y (coordinates of a rectangle), w and h (width and height of the rectangle), and checks if this rectangle collides or intersects with another rectangle instance in self. \n\nIt uses the following conditions to detect the collision:\n- rect1.x < self.x + self.w\n- rect1.x + rect1.w > self.x\n- rect1.y < self.y + self.h\n- rect1.h + rect1.y > self.y\n\nIf these 4 conditions are true, it returns True, indicating that the two rectangles have intersected, otherwise it returns False.\n\nThe method is not calling any other sub-method within itself."
+  },
+  "50": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 26,
+    "end_line": 31,
+    "code": "def __init__(self, x, y):\n    self.x = x\n    self.y = y\n    self.dx = 7\n    self.dy = 7",
+    "subcalls": [],
+    "summary": "The `__init__` method initializes the object of the class where it is defined. It takes two parameters, `x` and `y`, which are used to set the initial values of the object's attributes `self.x` and `self.y`. This method also sets the attributes `self.dx` and `self.dy` to a default value of 7. There is no explicit output of this method as it is a constructor."
+  },
+  "51": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "drawBall",
+    "start_line": 33,
+    "end_line": 34,
+    "code": "def drawBall(self, curState):\n    curState[self.y:self.y + 5, self.x:self.x + 5] = 255",
+    "subcalls": [],
+    "summary": "The 'drawBall' method takes in two parameters: 'self' and 'curState'. It sets a part of the 'curState' array to 255, effectively drawing a 5x5 \"ball\". The 'self' parameter implies that this method is part of an object-oriented program. There is no explicit output, but the effect of the method is that the 'curState' array is updated."
+  },
+  "52": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 37,
+    "end_line": 41,
+    "code": "def __init__(self, width, height):\n    super().__init__(width, height, 9)\n    self.paddleL = Paddle(0, 30, 10, 20)\n    self.paddleR = Paddle(self.width - 10, 30, 10, 20)\n    self.ball = Ball(100, 100)",
+    "subcalls": [
+      13,
+      25,
+      32,
+      52
+    ],
+    "summary": "The method \"__init__\" initializes an object of a class. The class takes in two required parameters 'width' and 'height'. The method initializes the 'paddleL', 'paddleR' and 'ball' properties for the object with their respective positions and sizes. The output of the method is an initialized object of the class."
+  },
+  "53": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "paddleRUp",
+    "start_line": 43,
+    "end_line": 44,
+    "code": "def paddleRUp(self):\n    if self.paddleR.y + 3 + self.paddleR.h <= self.height:\n        self.paddleR.y += 3",
+    "subcalls": [],
+    "summary": "The 'paddleRUp' Python method moves the right paddle up by three units, but only if the paddle's new Y-coordinate with this move is less than or equal to the height of the game screen. The method takes no parameters and returns nothing."
+  },
+  "54": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "paddleRDown",
+    "start_line": 46,
+    "end_line": 47,
+    "code": "def paddleRDown(self):\n    if self.paddleR.y - 3 >= 0:\n        self.paddleR.y -= 3",
+    "subcalls": [],
+    "summary": "The 'paddleRDown' method is used to move the right paddle down in a game. It takes in no parameters and returns no output. If the current y-coordinate of the paddle is 3 units away from the top of the screen, it moves the paddle down by 3 units. This method does not have any subcalls."
+  },
+  "55": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "paddleLUp",
+    "start_line": 49,
+    "end_line": 50,
+    "code": "def paddleLUp(self):\n    if self.paddleL.y + 3 + self.paddleR.h <= self.height:\n        self.paddleL.y += 3",
+    "subcalls": [],
+    "summary": "The 'paddleLUp' method updates the position of the left paddle upwards by 3 pixels, given that the addition of the current position and 3 pixels does not exceed the height limit of the game screen. \n\nParameters: None\nOutput: None\n\nSubcalls: None."
+  },
+  "56": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "paddleLDown",
+    "start_line": 52,
+    "end_line": 53,
+    "code": "def paddleLDown(self):\n    if self.paddleL.y - 3 >= 0:\n        self.paddleL.y -= 3",
+    "subcalls": [],
+    "summary": "The method 'paddleLDown' can be associated with an object in Python. The method decrements the Y-coordinate of the left paddle if it is not at the top already. The decrement value is 3 units. There are no input parameters and the method does not return anything."
+  },
+  "57": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "applyAction",
+    "start_line": 56,
+    "end_line": 82,
+    "code": "def applyAction(self, action):\n    if action == 0:\n        if self.paddleL.y - 3 >= 0:\n            self.paddleL.y -= 3\n    if action == 1:\n        if self.paddleL.y + 3 + self.paddleR.h <= self.height:\n            self.paddleL.y += 3\n    if action == 2:\n        if self.paddleR.y - 3 >= 0:\n            self.paddleR.y -= 3\n    if action == 3:\n        if self.paddleR.y + 3 + self.paddleR.h <= self.height:\n            self.paddleR.y += 3\n    if action == 4:\n        self.paddleLDown()\n        self.paddleRDown()\n    if action == 5:\n        self.paddleLUp()\n        self.paddleRUp()\n    if action == 6:\n        self.paddleLUp()\n        self.paddleRDown()\n    if action == 7:\n        self.paddleLDown()\n        self.paddleRUp()\n    return self.update()",
+    "subcalls": [
+      56,
+      54,
+      55,
+      53,
+      55,
+      54,
+      56,
+      53
+    ],
+    "summary": "The 'applyAction' method is designed to update the game state based on a given input action. There are eight possible actions, each of which perform different actions on the left and right paddles depending on their values. Some actions directly call submethods, including 'paddleLDown', 'paddleRDown', 'paddleLUp', and 'paddleRUp'. These submethods adjust the y-coordinate position of the respective paddle objects by three pixels unless the proposed move would take them beyond the screen boundaries. Overall, this method updates the game state and returns the updated game status. The method takes in no parameters and returns nothing."
+  },
+  "58": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "update",
+    "start_line": 85,
+    "end_line": 112,
+    "code": "def update(self):\n    self.ball.x += self.ball.dx\n    self.ball.y += self.ball.dy\n    if self.paddleL.detectHit(self.ball.x, self.ball.y, 5, 5) or self.paddleR.detectHit(self.ball.x, self.ball.y, 10, 10):\n        dx_r = random.randint(-3, 3)\n        dy_r = random.randint(-3, 3)\n        self.ball.dx = -self.ball.dx + (dx_r if dx_r != -self.ball.dx else 0)\n        self.ball.dy = -self.ball.dy + (dy_r if dy_r != -self.ball.dy else 0)\n        return 100\n    if self.ball.x < 0 or self.ball.x + 5 > self.width:\n        self.ball.x = random.randint(30, 200)\n        self.ball.y = random.randint(30, 200)\n        return -100\n    if self.ball.y < 0 or self.ball.y + 5 > self.height:\n        self.ball.dy = -self.ball.dy\n    self.clear_state()\n    self.paddleL.drawPaddle(self.state)\n    self.paddleR.drawPaddle(self.state)\n    self.ball.drawBall(self.state)\n    return 0",
+    "subcalls": [
+      48,
+      48,
+      51,
+      49,
+      49
+    ],
+    "summary": "The method 'update' takes no explicit input parameters but assumes access to several attributes and methods of an instance of a class. The method first updates the position of the ball based on its current values for dx and dy. It then checks if the ball has collided with either left or right paddle. If so, it changes the direction of the ball and returns a score of 100. If the ball has hit the walls, it moves the ball to a new random position and returns a score of -100. Otherwise, if there is no hit or wall collision, the method clears the previous state, and updates the current state of the game to reflect the positions of both paddles and the ball. Lastly, it returns 0. The subcalls 'drawPaddle' and 'drawBall' update the game state by drawing the position of the paddles and the ball respectively. The subcall 'detectHit' is used to check if the ball has collided with a paddle."
+  },
+  "59": {
+    "file_name": "PongGym.py",
+    "class_name": null,
+    "method_name": "reset",
+    "start_line": 114,
+    "end_line": 126,
+    "code": "def reset(self):\n    self.paddleL.y = random.randint(0, 200)\n    self.paddleR.y = random.randint(0, 200)\n    self.ball.x = random.randint(50, 200)\n    self.ball.y = random.randint(0, 200)\n    self.ball.dx = random.randint(-3, 3)\n    self.ball.dy = random.randint(-3, 3)\n    if self.ball.dx == 0:\n        self.ball.dx = -1\n    if self.ball.dy == 0:\n        self.ball.dy = -1",
+    "subcalls": [],
+    "summary": "The 'reset' method takes in the parameter 'self' which refers to the instance of the class it belongs to. The method resets the positions of paddles L and R, and the ball in a randomized manner. The ball's x and y coordinates are set between 50 to 200, and the paddles' y coordinates are set between 0 to 200. The method also sets a random change in the ball's x and y directions by assigning it to dx and dy respectively. If dx or dy is 0, it is reassigned as -1. The method does not return any value."
+  },
+  "60": {
+    "file_name": "RLGym.py",
+    "class_name": "Gym",
+    "method_name": "__init__",
+    "start_line": 15,
+    "end_line": 22,
+    "code": "def __init__(self, width, height, action_set_size, render=True):\n    self.width = width\n    self.height = height\n    self.action_set_size = action_set_size\n    self.state = np.zeros((width, height), np.uint8) * 128\n    self.agent = DeepQAgent.Agent(width, height, action_set_size)\n    IPython.display.display(PIL.Image.fromarray(self.state, mode='L'), display_id='0')",
+    "subcalls": [],
+    "summary": "The '__init__' method initializes an instance of the class with four parameters - 'width', 'height', 'action_set_size', and 'render'. The method sets the values of 'width', 'height', and 'action_set_size' to the values passed as parameters, and initializes the 'state' variable as a NumPy array of zeroes of size 'width' x 'height' with an unsigned integer data type of 8 bits. It instantiates an instance of the 'DeepQAgent' class from the 'Agent' module with arguments 'width', 'height', and 'action_set_size', and stores it in the 'agent' variable. It also displays an image of the 'state' array as a grayscale image using the 'IPython.display.display()' function.\n\nSubcalls:\n- np.zeros(): Initializes a NumPy array with zeroes.\n- DeepQAgent.Agent(): Instantiates an instance of the 'Agent' class from the 'DeepQAgent' module."
+  },
+  "61": {
+    "file_name": "RLGym.py",
+    "class_name": "Gym",
+    "method_name": "clear_state",
+    "start_line": 24,
+    "end_line": 25,
+    "code": "def clear_state(self):\n    self.state = np.zeros((self.width, self.height), np.uint8) * 128",
+    "subcalls": [],
+    "summary": "The 'clear_state' method sets the 'state' attribute of an object to a numpy array of zeros with the dimensions 'width' and 'height', casted as unsigned 8-bit integers, then multiplied by 128. This will effectively set all the values in the 'state' array to 0. The method does not take any parameters and does not have an explicit return value. \n\nSubcalls: \n- np.zeros(): creates an array of zeros with given dimensions\n- np.uint8: creates an unsigned 8-bit integer data type."
+  },
+  "62": {
+    "file_name": "RLGym.py",
+    "class_name": "Gym",
+    "method_name": "applyAction",
+    "start_line": 28,
+    "end_line": 29,
+    "code": "@abstractmethod\ndef applyAction(self, action):\n    pass",
+    "subcalls": [],
+    "summary": "The given method 'applyAction' is declared as an abstract method and does not have any implementation. It takes in one parameter 'action'. There is no output from this method as it only defines the method signature with an expected behavior for child classes to implement. Any subcall to this method will depend on its implementation in the child class."
+  },
+  "63": {
+    "file_name": "RLGym.py",
+    "class_name": "Gym",
+    "method_name": "updateState",
+    "start_line": 31,
+    "end_line": 47,
+    "code": "def updateState(self, training=True):\n    log_state = self.state\n    if len(self.agent.state_history) > 1:\n        state = torch.stack((torch.tensor(self.agent.state_history[-2]), torch.tensor(self.agent.state_history[-1]), torch.tensor(self.state)))\n        best_action = self.agent.determineAction(state, epsilon_greedy=training)\n    else:\n        best_action = random.randint(0, self.action_set_size)\n        if training:\n            self.agent.inference_history.append(None)\n    reward = self.applyAction(best_action)\n    self.agent.apply(log_state, best_action, reward, training=training)",
+    "subcalls": [],
+    "summary": "The 'updateState' method takes a boolean parameter called 'training' and updates the current state based on the current agent's state history. It determines the best action based on the current state history and the epsilon_greedy value, and applies the selected action to the current state. If the 'training' parameter is True, it appends None to the inference_history of the agent. The method returns nothing but modifies the state and updates the agent's history based on the selected action and resulting reward. The method relies on the following subcalls: \n- 'determineAction': Determines the best action for the given state (stack of past two states and a current state).\n- 'random.randint': Generates a random integer from 0 to the action set size when state history is less than or equal to 1.\n- 'applyAction': Applies the selected action to the current state and returns the resulting reward.\n- 'agent.apply': Updates the agent's state and action history lists based on the selected action and the reward obtained."
+  },
+  "64": {
+    "file_name": "RLGym.py",
+    "class_name": "Gym",
+    "method_name": "render",
+    "start_line": 51,
+    "end_line": 52,
+    "code": "def render(self):\n    IPython.display.update_display(PIL.Image.fromarray(self.state, mode='L'), display_id='0')",
+    "subcalls": [],
+    "summary": "The 'render' method takes in no parameters and outputs a display of the current state of an object in grayscale using the IPython display module. It uses the 'update_display' method to update the display with a PIL Image object of the object's state in grayscale. The 'fromarray' method is used to convert the object's state into a PIL Image object. The 'mode' parameter is set to 'L' to convert the image to grayscale."
+  },
+  "65": {
+    "file_name": "RLGym.py",
+    "class_name": null,
+    "method_name": "__init__",
+    "start_line": 15,
+    "end_line": 22,
+    "code": "def __init__(self, width, height, action_set_size, render=True):\n    self.width = width\n    self.height = height\n    self.action_set_size = action_set_size\n    self.state = np.zeros((width, height), np.uint8) * 128\n    self.agent = DeepQAgent.Agent(width, height, action_set_size)\n    IPython.display.display(PIL.Image.fromarray(self.state, mode='L'), display_id='0')",
+    "subcalls": [],
+    "summary": "The '__init__' method initializes an instance of a class with four parameters: 'width', 'height', 'action_set_size', and 'render' - a boolean indicating whether to render an image. It creates an array 'state' with dimensions 'width' x 'height' and of data type np.uint8. It initializes the 'agent' object using the 'DeepQAgent.Agent' class with the same parameters as 'width', 'height', and 'action_set_size'. Lastly, it displays the current state as an image using the 'IPython.display.display' method.\n\nSubcalls:\n- 'np.zeros((width, height), np.uint8) * 128' creates an array filled with zeros of the specified dimensions and data type.\n- 'DeepQAgent.Agent(width, height, action_set_size)' initializes an object of 'DeepQAgent.Agent' class with the same parameters."
+  },
+  "66": {
+    "file_name": "RLGym.py",
+    "class_name": null,
+    "method_name": "clear_state",
+    "start_line": 24,
+    "end_line": 25,
+    "code": "def clear_state(self):\n    self.state = np.zeros((self.width, self.height), np.uint8) * 128",
+    "subcalls": [],
+    "summary": "The 'clear_state' method sets the current state of an object to an array filled with zeroes, with the same dimensions as the object's width and height attributes, and with a data type of unsigned integers of 8 bits. \n\nParameter/s: None\n\nOutput: None\n\nSubcalls:\n- np.zeros - creates a new array filled with zeroes\n- np.uint8 - sets the data type for the array to unsigned integers of 8 bits."
+  },
+  "67": {
+    "file_name": "RLGym.py",
+    "class_name": null,
+    "method_name": "applyAction",
+    "start_line": 28,
+    "end_line": 29,
+    "code": "@abstractmethod\ndef applyAction(self, action):\n    pass",
+    "subcalls": [],
+    "summary": "The 'applyAction' method is an abstract method that takes in a single parameter 'action'. It does not provide any implementation and simply passes control to the subclass to provide its own implementation. \n\nAs such, the method has no output and its functionality depends on how it is implemented in the subclass."
+  },
+  "68": {
+    "file_name": "RLGym.py",
+    "class_name": null,
+    "method_name": "updateState",
+    "start_line": 31,
+    "end_line": 47,
+    "code": "def updateState(self, training=True):\n    log_state = self.state\n    if len(self.agent.state_history) > 1:\n        state = torch.stack((torch.tensor(self.agent.state_history[-2]), torch.tensor(self.agent.state_history[-1]), torch.tensor(self.state)))\n        best_action = self.agent.determineAction(state, epsilon_greedy=training)\n    else:\n        best_action = random.randint(0, self.action_set_size)\n        if training:\n            self.agent.inference_history.append(None)\n    reward = self.applyAction(best_action)\n    self.agent.apply(log_state, best_action, reward, training=training)",
+    "subcalls": [
+      57,
+      67,
+      27,
+      26
+    ],
+    "summary": "The 'updateState' method takes in a boolean parameter 'training' and updates the game state based on the input action. It first retrieves the previous state and the current state from the agent's state history and stacks them along with the current state for the PyTorch model to determine the next action. If the 'training' flag is set to True, the action is determined using the 'determineAction' method and its inference is stored in the 'inference_history'. Otherwise, a random action is selected. The selected action is then used to update the game state using the 'applyAction' method, and the resulting reward is passed to the 'apply' method to update the agent's state history and weights if the 'training' flag is True. The method does not return a value."
+  },
+  "69": {
+    "file_name": "RLGym.py",
+    "class_name": null,
+    "method_name": "render",
+    "start_line": 51,
+    "end_line": 52,
+    "code": "def render(self):\n    IPython.display.update_display(PIL.Image.fromarray(self.state, mode='L'), display_id='0')",
+    "subcalls": [],
+    "summary": "The 'render' method takes no input parameters and returns no output. It displays an image using the IPython.display.update_display function. The image is generated from the 'state' attribute of the object, which is converted into an array of intensity values using 'PIL.Image.fromarray'. The image is displayed on a display with ID '0'."
+  }
+}
